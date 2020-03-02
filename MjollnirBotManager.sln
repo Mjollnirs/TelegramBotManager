@@ -1,0 +1,23 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MjollnirBotManager", "MjollnirBotManager\MjollnirBotManager.csproj", "{B593B63E-13D2-4DDC-A3E0-A13AF3D29C45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MjollnirBotManager.Common", "MjollnirBotManager.Common\MjollnirBotManager.Common.csproj", "{66D49F87-2E50-4049-BC66-C3B34E3EFC5E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B593B63E-13D2-4DDC-A3E0-A13AF3D29C45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B593B63E-13D2-4DDC-A3E0-A13AF3D29C45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B593B63E-13D2-4DDC-A3E0-A13AF3D29C45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B593B63E-13D2-4DDC-A3E0-A13AF3D29C45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66D49F87-2E50-4049-BC66-C3B34E3EFC5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66D49F87-2E50-4049-BC66-C3B34E3EFC5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66D49F87-2E50-4049-BC66-C3B34E3EFC5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66D49F87-2E50-4049-BC66-C3B34E3EFC5E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
