@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Castle.Core.Logging;
 using Castle.MicroKernel;
 using MjollnirBotManager.Common.Dependency;
 using MjollnirBotManager.Common.Security;
@@ -10,7 +11,7 @@ namespace MjollnirBotManager.Common.PipeLines
 {
     public abstract class MessageHandlerBase : Handler<IMessageHandler, Message>, IMessageHandler, ISingleton
     {
-        private readonly IAdminUserValidator _userValidator;
+        private readonly IAdminChatValidator _adminChatValidator;
         private readonly ISessionManager _sessionManager;
         private readonly IKernel _kernel;
 
@@ -18,18 +19,19 @@ namespace MjollnirBotManager.Common.PipeLines
 
         protected Message Message { get; private set; }
         protected MessageType MessageType => Message.Type;
-        protected bool IsAdmin => _userValidator.IsAdmin(Message).Result;
+        protected bool IsAdmin => _adminChatValidator.IsAdmin(Message).Result;
         protected Chat Chat => Message.Chat;
 
         protected ISession Session => _sessionManager.GetSessionAsync(Chat).Result;
 
         public MessageHandlerBase(
             IKernel kernel,
-            IAdminUserValidator userValidator,
-            ISessionManager sessionManager)
+            ILogger logger,
+            IAdminChatValidator adminChatValidator,
+            ISessionManager sessionManager) : base(logger)
         {
             _kernel = kernel;
-            _userValidator = userValidator;
+            _adminChatValidator = adminChatValidator;
             _sessionManager = sessionManager;
         }
 

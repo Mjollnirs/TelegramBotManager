@@ -3,7 +3,7 @@
     public interface IBotConfiguration
     {
         string ApiToken { get; set; }
-        string RootAdmin { get; set; }
+        long RootAdminChat { get; set; }
         long DefaultChat { get; set; }
         ProxyConfiguration Proxy { get; set; }
     }

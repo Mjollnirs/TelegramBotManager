@@ -5,7 +5,7 @@ namespace MjollnirBotManager.Common.Configuration
     {
         public string ApiToken { get; set; }
 
-        public string RootAdmin { get; set; }
+        public long RootAdminChat { get; set; }
 
         public long DefaultChat { get; set; }
 

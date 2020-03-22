@@ -13,6 +13,7 @@ using MjollnirBotManager.Common.PipeLines;
 using MjollnirBotManager.Common.Security;
 using MjollnirBotManager.PipeLines;
 using Telegram.Bot;
+using Telegram.Bot.Args;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using IUpdateHandler = MjollnirBotManager.Common.PipeLines.IUpdateHandler;
@@ -25,7 +26,7 @@ namespace MjollnirBotManager
         private readonly IBotConfiguration _config;
         private readonly IYieldingUpdateReceiver _receiver;
         private readonly IPipeLine<IUpdateHandler, Update> _updatePipeLine;
-        private readonly IAdminUserManager _userManager;
+        private readonly IAdminChatManager _adminChatManager;
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
 
         private readonly CommandMessageHandler _commandMessageHandler;
@@ -37,14 +38,14 @@ namespace MjollnirBotManager
         public BotManager(
             IKernel kernel,
             IBotConfiguration config,
-            IAdminUserManager userManager,
+            IAdminChatManager adminChatManager,
             IPipeLine<IUpdateHandler, Update> updatePipeLine,
             ILogger logger,
             CommandMessageHandler commandMessageHandler)
         {
             _config = config;
             _logger = logger;
-            _userManager = userManager;
+            _adminChatManager = adminChatManager;
             _updatePipeLine = updatePipeLine;
             _commandMessageHandler = commandMessageHandler;
 
@@ -52,18 +53,37 @@ namespace MjollnirBotManager
                 ? new TelegramBotClient(_config.ApiToken)
                 : new TelegramBotClient(_config.ApiToken, new WebProxy(_config.Proxy.Host, _config.Proxy.Port));
             _receiver = new QueuedUpdateReceiver(Telegram);
+            Telegram.OnReceiveError += Telegram_OnReceiveError;
+            Telegram.OnReceiveGeneralError += Telegram_OnReceiveGeneralError;
+        }
+
+        private void Telegram_OnReceiveGeneralError(object sender, ReceiveGeneralErrorEventArgs e)
+        {
+            _logger.ErrorFormat(e.Exception, "OnReceiveGeneralError");
+        }
+
+        private void Telegram_OnReceiveError(object sender, ReceiveErrorEventArgs e)
+        {
+            _logger.ErrorFormat(e.ApiRequestException, "OnReceiveError");
         }
 
         public async Task StartAsync()
         {
             _logger.InfoFormat("Start BotManager...");
 
-            var me = await Telegram.GetMeAsync();
-            _logger.InfoFormat("I am user {0} and my name is {1}.", me.Id, me.Username);
+            try
+            {
+                var me = await Telegram.GetMeAsync();
+                _logger.InfoFormat("I am user {0} and my name is {1}.", me.Id, me.Username);
 
-            _logger.InfoFormat("Start Receiver...");
-            ((QueuedUpdateReceiver)_receiver).StartReceiving(cancellationToken: _cancellation.Token);
-            _ = Task.Run(async () => await ProcessUpdate(_cancellation.Token), _cancellation.Token);
+                _logger.InfoFormat("Start Receiver...");
+                ((QueuedUpdateReceiver)_receiver).StartReceiving(cancellationToken: _cancellation.Token);
+                _ = Task.Run(async () => await ProcessUpdate(_cancellation.Token), _cancellation.Token);
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorFormat(ex, "StartAsync");
+            }
 
             await LoadAsync();
         }
@@ -103,7 +123,7 @@ namespace MjollnirBotManager
 
         private async Task LoadAsync()
         {
-            await _userManager.AddAdminUser(_config.RootAdmin);
+            await _adminChatManager.AddAdminChat(_config.RootAdminChat);
 
             await Task.Yield();
         }

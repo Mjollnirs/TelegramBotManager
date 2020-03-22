@@ -13,7 +13,6 @@ namespace MjollnirBotManager.PipeLines
 {
     internal sealed class CommandMessageHandler : MessageHandlerBase
     {
-        private readonly ILogger _logger;
         private readonly ICommandManager _commandManager;
 
         public ICommand PrevCommand { get; private set; }
@@ -21,23 +20,23 @@ namespace MjollnirBotManager.PipeLines
         public CommandMessageHandler(
             IKernel kernel,
             ILogger logger,
-            IAdminUserValidator userValidator,
+            IAdminChatValidator adminChatValidator,
             ICommandManager commandManager,
             ISessionManager sessionManager)
-            : base(kernel, userValidator, sessionManager)
+            : base(kernel, logger, adminChatValidator, sessionManager)
         {
-            _logger = logger;
             _commandManager = commandManager;
             Order = int.MinValue;
         }
 
         protected async override Task ProcessHandler(Chat chat, MessageType messageType, bool isAdmin, Message message, ISession session, CancellationToken token)
         {
-            _logger.InfoFormat("Receiver message {0} in chat {1}, Entity Length: {2}, Admin: {3}",
+            Logger.InfoFormat("Receiver message {0} in chat {1}, Entity Length: {2}, Admin: {3}, IsCommand: {4}",
                 messageType,
                 chat.Type,
                 message.Entities?.Length,
-                isAdmin);
+                isAdmin,
+                await _commandManager.IsCommandAsync(message));
 
             if (await _commandManager.IsCommandAsync(message))
             {

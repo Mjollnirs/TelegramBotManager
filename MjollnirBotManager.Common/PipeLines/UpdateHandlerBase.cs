@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Castle.Core.Logging;
 using MjollnirBotManager.Common.Dependency;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -9,6 +10,11 @@ namespace MjollnirBotManager.Common.PipeLines
 {
     public abstract class UpdateHandlerBase : Handler<IUpdateHandler, Update>, IUpdateHandler, ISingleton
     {
+        public UpdateHandlerBase(ILogger logger)
+            : base(logger)
+        {
+        }
+
         protected Update Update { get; private set; }
         protected UpdateType UpdateType => Update.Type;
 

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Castle.MicroKernel;
@@ -26,7 +27,7 @@ namespace MjollnirBotManager.Common.Command
             string command = hasBotCommand ?
                 message.EntityValues.ToList()[
                     message.Entities.ToList().IndexOf(
-                        message.Entities.Where(x => x.Type == MessageEntityType.BotCommand).First())].TrimStart('/') :
+                        message.Entities.Where(x => x.Type == MessageEntityType.BotCommand).First())].TrimStart('/').Split('@').FirstOrDefault() :
                 "Unkown";
 
             await Task.Yield();
@@ -36,10 +37,12 @@ namespace MjollnirBotManager.Common.Command
 
         public async Task<ICommand> ExecuteAsync(Message message, CancellationToken token)
         {
+            if (!await IsCommandAsync(message))
+                throw new NotSupportedException();
+
             string command = message.EntityValues.ToList()[
                     message.Entities.ToList().IndexOf(
-                        message.Entities.Where(x => x.Type == MessageEntityType.BotCommand).First())].TrimStart('/');
-
+                        message.Entities.Where(x => x.Type == MessageEntityType.BotCommand).First())].TrimStart('/').Split('@').FirstOrDefault();
 
             var commandObj = _kernel.Resolve<ICommand>($"{command}Command");
 

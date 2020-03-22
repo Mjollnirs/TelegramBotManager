@@ -12,7 +12,7 @@ namespace MjollnirBotManager.Common.Command
     public abstract class CommandBase : ICommand
     {
         private readonly ILogger _logger;
-        private readonly IAdminUserValidator _userValidator;
+        private readonly IAdminChatValidator _adminChatValidator;
         private readonly ISessionManager _sessionManager;
 
         protected ICommandManager CommandManager { get; }
@@ -20,7 +20,7 @@ namespace MjollnirBotManager.Common.Command
 
         protected Message Message { get; private set; }
         protected MessageType MessageType => Message.Type;
-        protected bool IsAdmin => _userValidator.IsAdmin(Message).Result;
+        protected bool IsAdmin => _adminChatValidator.IsAdmin(Message).Result;
         protected Chat Chat => Message.Chat;
 
         protected ISession Session => _sessionManager.GetSessionAsync(Chat).Result;
@@ -30,7 +30,7 @@ namespace MjollnirBotManager.Common.Command
             CommandManager = kernel.Resolve<ICommandManager>();
             BotManager = kernel.Resolve<IBotManager>();
             _logger = kernel.Resolve<ILogger>().CreateChildLogger(nameof(CommandBase));
-            _userValidator = kernel.Resolve<IAdminUserValidator>();
+            _adminChatValidator = kernel.Resolve<IAdminChatValidator>();
             _sessionManager = kernel.Resolve<ISessionManager>();
         }
 

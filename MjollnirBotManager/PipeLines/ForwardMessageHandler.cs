@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Castle.Core.Logging;
 using Castle.MicroKernel;
 using MjollnirBotManager.Common.Configuration;
 using MjollnirBotManager.Common.PipeLines;
@@ -13,20 +15,21 @@ namespace MjollnirBotManager.PipeLines
 {
     internal sealed class ForwardMessageHandler : MessageHandlerBase
     {
-        private readonly IAdminUserManager _adminUserManager;
+        private readonly IAdminChatManager _adminChatManager;
         private readonly IBotConfiguration _config;
 
         private ChatId preChatId;
 
         public ForwardMessageHandler(
             IKernel kernel,
+            ILogger logger,
+            IAdminChatValidator IAdminChatManager,
+            ISessionManager sessionManager,
             IBotConfiguration config,
-            IAdminUserManager adminUserManager,
-            IAdminUserValidator userValidator,
-            ISessionManager sessionManager)
-            : base(kernel, userValidator, sessionManager)
+            IAdminChatManager adminChatManager)
+            : base(kernel, logger, IAdminChatManager, sessionManager)
         {
-            _adminUserManager = adminUserManager;
+            _adminChatManager = adminChatManager;
             _config = config;
         }
 
@@ -35,8 +38,6 @@ namespace MjollnirBotManager.PipeLines
             if (isAdmin && chat.Type == ChatType.Private)
             {
                 ChatId id = preChatId;
-                if (message.ReplyToMessage != null)
-                    id = message.ReplyToMessage.Chat;
 
                 if (id == null)
                     id = new ChatId(_config.DefaultChat);
@@ -65,15 +66,18 @@ namespace MjollnirBotManager.PipeLines
             else if (!isAdmin)
             {
                 preChatId = chat;
-                await ForwardToAdmin(message);
+                await ForwardToAdmin(message, token);
             }
         }
 
-        private async Task ForwardToAdmin(Message message)
+        private async Task ForwardToAdmin(Message message, CancellationToken token)
         {
-            foreach (var item in await _adminUserManager.GetAllAdminUserChatId())
+            foreach (var item in await _adminChatManager.GetAllAdminChats())
             {
-                await BotManager.Telegram.ForwardMessageAsync(item, message.Chat, message.MessageId);
+                await BotManager.Telegram.ForwardMessageAsync(item,
+                    message.Chat,
+                    message.MessageId,
+                    cancellationToken: token);
             }
         }
     }
