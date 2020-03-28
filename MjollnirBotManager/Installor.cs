@@ -1,8 +1,4 @@
-﻿using System;
-using MjollnirBotManager.Command;
-using MjollnirBotManager.Common;
-using MjollnirBotManager.Common.Command;
-using MjollnirBotManager.Common.Dependency;
+﻿using MjollnirBotManager.Common.Dependency;
 
 namespace MjollnirBotManager
 {

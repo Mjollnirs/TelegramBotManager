@@ -72,7 +72,7 @@ namespace MjollnirBotManager.PipeLines
 
         private async Task ForwardToAdmin(Message message, CancellationToken token)
         {
-            foreach (var item in await _adminChatManager.GetAllAdminChats())
+            foreach (var item in await _adminChatManager.GetAllAdminChatsAsync())
             {
                 await BotManager.Telegram.ForwardMessageAsync(item,
                     message.Chat,

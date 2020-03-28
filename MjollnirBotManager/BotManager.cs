@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Castle.Core.Logging;
 using Castle.MicroKernel;
-using Castle.MicroKernel.Registration;
 using MjollnirBotManager.Common;
 using MjollnirBotManager.Common.Command;
 using MjollnirBotManager.Common.Configuration;
@@ -27,9 +26,9 @@ namespace MjollnirBotManager
         private readonly IYieldingUpdateReceiver _receiver;
         private readonly IPipeLine<IUpdateHandler, Update> _updatePipeLine;
         private readonly IAdminChatManager _adminChatManager;
-        private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
-
         private readonly CommandMessageHandler _commandMessageHandler;
+
+        private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
 
         public ITelegramBotClient Telegram { get; }
 
@@ -123,7 +122,7 @@ namespace MjollnirBotManager
 
         private async Task LoadAsync()
         {
-            await _adminChatManager.AddAdminChat(_config.RootAdminChat);
+            await _adminChatManager.AddAdminChatAsync(_config.RootAdminChat);
 
             await Task.Yield();
         }

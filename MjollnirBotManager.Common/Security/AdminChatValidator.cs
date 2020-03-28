@@ -13,24 +13,24 @@ namespace MjollnirBotManager.Common.Security
             _adminChatManager = adminChatManager;
         }
 
-        public async Task<bool> IsAdmin(Message message)
+        public async Task<bool> IsAdminAsync(Message message)
         {
-            return await IsAdmin(message.Chat) || await IsAdmin(message.From);
+            return await IsAdminAsync(message.Chat) || await IsAdminAsync(message.From);
         }
 
-        public async Task<bool> IsAdmin(ChatId chatId)
+        public async Task<bool> IsAdminAsync(ChatId chatId)
         {
-            return await IsAdmin(chatId.Identifier);
+            return await IsAdminAsync(chatId.Identifier);
         }
 
-        public async Task<bool> IsAdmin(User user)
+        public async Task<bool> IsAdminAsync(User user)
         {
-            return await IsAdmin(user.Id);
+            return await IsAdminAsync(user.Id);
         }
 
-        public async Task<bool> IsAdmin(long id)
+        public async Task<bool> IsAdminAsync(long id)
         {
-            return (await _adminChatManager.GetAllAdminChats()).Select(x => x.Identifier).Contains(id);
+            return (await _adminChatManager.GetAllAdminChatsAsync()).Select(x => x.Identifier).Contains(id);
         }
     }
 }

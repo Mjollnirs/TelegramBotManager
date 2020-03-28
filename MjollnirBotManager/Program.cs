@@ -1,14 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Castle.Core.Logging;
 using Castle.Facilities.Logging;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
+using LiteDB;
 using Microsoft.Extensions.Configuration;
 using MjollnirBotManager.Common;
-using MjollnirBotManager.Common.PipeLines;
-using Telegram.Bot.Types;
 
 namespace MjollnirBotManager
 {
@@ -16,6 +14,12 @@ namespace MjollnirBotManager
     {
         static void Main(string[] args)
         {
+            IConfiguration _config = new ConfigurationBuilder()
+                        .AddJsonFile("appsettings.json", true, true)
+                        .AddEnvironmentVariables("APP_")
+                        .AddCommandLine(args)
+                        .Build();
+
             IWindsorContainer container = new WindsorContainer();
 
             container.Register(Component.For<IWindsorContainer>()
@@ -26,11 +30,15 @@ namespace MjollnirBotManager
                 .LifestyleSingleton()
                 .UsingFactoryMethod(() =>
                 {
-                    return new ConfigurationBuilder()
-                        .AddJsonFile("appsettings.json", true, true)
-                        .AddEnvironmentVariables("APP_")
-                        .AddCommandLine(args)
-                        .Build();
+                    return _config;
+                }));
+
+            container.Register(Component.For<ILiteDatabase>()
+                .ImplementedBy<LiteDatabase>()
+                .LifestyleSingleton()
+                .UsingFactoryMethod(() =>
+                {
+                    return new LiteDatabase(_config.GetConnectionString("DefaultConnection"));
                 }));
 
             container.Install(FromAssembly.InThisApplication(typeof(App).Assembly));

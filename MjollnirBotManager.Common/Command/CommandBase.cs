@@ -20,7 +20,7 @@ namespace MjollnirBotManager.Common.Command
 
         protected Message Message { get; private set; }
         protected MessageType MessageType => Message.Type;
-        protected bool IsAdmin => _adminChatValidator.IsAdmin(Message).Result;
+        protected bool IsAdmin => _adminChatValidator.IsAdminAsync(Message).Result;
         protected Chat Chat => Message.Chat;
 
         protected ISession Session => _sessionManager.GetSessionAsync(Chat).Result;

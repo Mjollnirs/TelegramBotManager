@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Castle.Core.Logging;
+using LiteDB;
 using Microsoft.Extensions.Configuration;
 using MjollnirBotManager.Common;
 using MjollnirBotManager.Common.Dependency;
@@ -12,12 +13,14 @@ namespace MjollnirBotManager
         private readonly ILogger _logger;
         private readonly IConfiguration _config;
         private readonly IBotManager _manager;
+        private readonly ILiteDatabase _database;
 
-        public App(ILogger logger, IConfiguration configuration, IBotManager manager)
+        public App(ILogger logger, IConfiguration configuration, IBotManager manager, ILiteDatabase database)
         {
             _logger = logger;
             _config = configuration;
             _manager = manager;
+            _database = database;
         }
 
         public async Task RunAsyc()
@@ -33,6 +36,8 @@ namespace MjollnirBotManager
         private async Task StopAsync()
         {
             _logger.InfoFormat("Stop App...");
+
+            _database.Dispose();
 
             await _manager.StopAsync();
             _logger.InfoFormat("App Stop!");

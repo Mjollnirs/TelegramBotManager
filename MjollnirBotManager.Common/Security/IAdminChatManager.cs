@@ -8,10 +8,10 @@ namespace MjollnirBotManager.Common.Security
 {
     public interface IAdminChatManager : ISingleton
     {
-        Task<IList<ChatId>> GetAllAdminChats();
-        Task AddAdminChat(long chatid);
-        Task AddAdminChat(ChatId chatid);
-        Task RemoveAdminChat(long chatid);
-        Task RemoveAdminChat(ChatId chatid);
+        Task<IList<ChatId>> GetAllAdminChatsAsync();
+        Task AddAdminChatAsync(long chatId);
+        Task AddAdminChatAsync(ChatId chatId);
+        Task RemoveAdminChatAsync(long chatId);
+        Task RemoveAdminChatAsync(ChatId chatId);
     }
 }

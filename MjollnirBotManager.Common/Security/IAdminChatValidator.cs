@@ -7,9 +7,9 @@ namespace MjollnirBotManager.Common.Security
 {
     public interface IAdminChatValidator : ISingleton
     {
-        Task<bool> IsAdmin(Message message);
-        Task<bool> IsAdmin(ChatId message);
-        Task<bool> IsAdmin(User message);
-        Task<bool> IsAdmin(long id);
+        Task<bool> IsAdminAsync(Message message);
+        Task<bool> IsAdminAsync(ChatId message);
+        Task<bool> IsAdminAsync(User message);
+        Task<bool> IsAdminAsync(long id);
     }
 }

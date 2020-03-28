@@ -2,54 +2,44 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Castle.Core.Logging;
+using LiteDB;
+using MjollnirBotManager.Common.Store;
 using Telegram.Bot.Types;
 
 namespace MjollnirBotManager.Common.Security
 {
     internal sealed class AdminChatManager : IAdminChatManager
     {
-        private readonly IList<long> _chats = new List<long>();
         private readonly ILogger _logger;
+        private readonly IChatManager _chatManager;
 
-        public AdminChatManager(ILogger logger)
+        public AdminChatManager(ILogger logger, IChatManager chatManager)
         {
             _logger = logger;
+            _chatManager = chatManager;
         }
 
-        public async Task AddAdminChat(long chatid)
+        public async Task AddAdminChatAsync(ChatId chatId) =>
+            await AddAdminChatAsync(chatId.Identifier);
+
+        public async Task AddAdminChatAsync(long chatId)
         {
-            if (!_chats.Contains(chatid))
-            {
-                _logger.InfoFormat("Add Admin Chat: {0}", chatid);
-                _chats.Add(chatid);
-            }
+            await _chatManager.AddAsync(chatId, true);
+        }
+
+        public async Task RemoveAdminChatAsync(ChatId chatId) =>
+            await RemoveAdminChatAsync(chatId.Identifier);
+
+        public async Task RemoveAdminChatAsync(long chatId)
+        {
+            await ((ChatManager)_chatManager).UpdateAdminAsync(chatId, false);
+        }
+
+        public async Task<IList<ChatId>> GetAllAdminChatsAsync()
+        {
             await Task.Yield();
-        }
-
-        public async Task AddAdminChat(ChatId chatid)
-        {
-            await AddAdminChat(chatid.Identifier);
-        }
-
-        public async Task<IList<ChatId>> GetAllAdminChats()
-        {
-            await Task.Yield();
-            return _chats.Select(x => new ChatId(x)).ToArray();
-        }
-
-        public async Task RemoveAdminChat(long chatid)
-        {
-            if (_chats.Contains(chatid))
-            {
-                _logger.InfoFormat("Remove Admin Chat: {0}", chatid);
-                _chats.Remove(chatid);
-            }
-            await Task.Yield();
-        }
-
-        public async Task RemoveAdminChat(ChatId chatid)
-        {
-            await RemoveAdminChat(chatid.Identifier);
+            var all = await ((ChatManager)_chatManager).GetAllAdminsAsync();
+            return all.Select(x => new ChatId(x)).ToArray();
         }
     }
 }
