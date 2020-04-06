@@ -36,6 +36,8 @@ namespace MjollnirBotManager.PipeLines
                         await _messagePipeLine.InvokeAsync(Update.Message, token);
                     });
                     break;
+                case UpdateType.CallbackQuery:
+                    break;
                 default:
                     break;
             }

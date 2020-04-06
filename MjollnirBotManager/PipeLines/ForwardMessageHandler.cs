@@ -59,6 +59,21 @@ namespace MjollnirBotManager.PipeLines
                             new InputOnlineFile(message.Photo.OrderByDescending(x => x.FileSize).First().FileId),
                             cancellationToken: token);
                         break;
+                    case MessageType.Audio:
+                        await BotManager.Telegram.SendAudioAsync(id,
+                            new InputOnlineFile(message.Audio.FileId),
+                            cancellationToken: token);
+                        break;
+                    case MessageType.Video:
+                        await BotManager.Telegram.SendVideoAsync(id,
+                            new InputOnlineFile(message.Video.FileId),
+                            cancellationToken: token);
+                        break;
+                    case MessageType.Voice:
+                        await BotManager.Telegram.SendVoiceAsync(id,
+                            new InputOnlineFile(message.Voice.FileId),
+                            cancellationToken: token);
+                        break;
                     default:
                         break;
                 }
